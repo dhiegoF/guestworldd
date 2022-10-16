@@ -26,14 +26,9 @@ const Home: React.FC = () => {
     }
 
     socket.emit("user", name, async (verify: any) => {
-      if (verify) {
-        setUsername(name)
-        await router.push("/chat");
-        setLoading(false)
-        return
-      }
+      setUsername(name)
+      await router.push("/chat");
       setLoading(false)
-      return ErrorToast("nickname already in use", toast);
     });
   }, []);
 

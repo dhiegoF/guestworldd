@@ -30,7 +30,8 @@ import {Messages} from "../dtos/MessageDTO"
 const socket = io();
 
 const Chat: React.FC = ({stars}) => {
-
+  const [talkingWith, setTalkingWith] = useState('')
+  const [menu, setMenu] = useState(false)
   const msgRef = useRef<HTMLInputElement>(null);
   const [showChatWindow, setShowChatWindow] = useState<Boolean>(false);
   const [usersList, setUsersList] = useState<Array<string>>([]);
@@ -57,7 +58,7 @@ const Chat: React.FC = ({stars}) => {
      // const usersWithoutCurrent = users.filter(user=>user!==name)
       setUsersList(users);
     });
-    console.log("oioioioioioioioioio")
+    
   }, [name]);
 
   //const memo = ()=>{
@@ -94,7 +95,7 @@ const Chat: React.FC = ({stars}) => {
     socket.emit("sendMessages", response);
 
     socket.on('returnedMessage', (msg: Messages): void => {
-      console.log('resre')
+      
       const msgIndex = msg[msg.length - 1].msg
       console.log(msgIndex)
 
@@ -159,7 +160,9 @@ const Chat: React.FC = ({stars}) => {
                     {name}
                   </Text>
                 </Stack>
-                <HamburgerIcon boxSize={5} color="gray.500" />
+                <HamburgerIcon boxSize={5} color="gray.900" onClick={() => {
+                  setMenu(state => !state)
+                }}/>
               </Flex>
 
               <Flex
@@ -190,7 +193,9 @@ const Chat: React.FC = ({stars}) => {
                 flexDir="column"
                 overflowY="scroll"
               >
-                {usersList.map(list => (
+                {usersList.map(list => {
+                  if(list != name) {
+                  return (
                       <Box
                       key={key++}
                       >
@@ -204,7 +209,10 @@ const Chat: React.FC = ({stars}) => {
                           p="10px 16px"
                           cursor="pointer"
                           _hover={{ bg: " #eaf6f1"}}
-                          onClick={handleShowChatWindow}
+                          onClick={() => {
+                            handleShowChatWindow()
+                            setTalkingWith(list)
+                          }}
                         >
                           ]
                           <Avatar size="md" onClick={onOpen}>
@@ -226,13 +234,15 @@ const Chat: React.FC = ({stars}) => {
                         </Stack>
                         <Divider />
                       </Box>
-                    ))
-                }
+                    )
+}})}
               </Flex>
             </Grid>
 
+
             {showChatWindow?(
                       <Grid
+                      w="100%"
                       h="100%"
                       alignItems="center"
                       gridTemplateRows="59px 1fr 90px"
@@ -257,7 +267,7 @@ const Chat: React.FC = ({stars}) => {
                           color="gray.500"
                           textTransform="capitalize"
                         >
-                          Fulano
+                          {talkingWith}
                         </Text>
                         <Avatar size="sm"></Avatar>
                       </Flex>
